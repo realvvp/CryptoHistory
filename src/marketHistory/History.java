@@ -17,7 +17,10 @@ import java.util.logging.Logger;
  */
 public class History {
     
+    public static Configuration config = new Configuration();;
+    
     public static void main(String[] args) {
+        
         HistoryUpdater historyUpdater = new HistoryUpdater();
         Thread updater = new Thread( historyUpdater );
         updater.setDaemon( true );
@@ -29,6 +32,7 @@ public class History {
                 String command = br.readLine();
                 
                 if(command.equals( "/stop" )){
+                    DBHandler.getInstance().close();
                     break;
                 } else {
                     System.out.println("type '\"'/stop'\"' to stop programm!");

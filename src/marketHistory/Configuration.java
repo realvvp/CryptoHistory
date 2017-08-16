@@ -9,7 +9,6 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -18,23 +17,14 @@ import java.util.logging.Logger;
  *
  * @author VVP
  */
-public class Property {
-
-    private static Property instance;
+public class Configuration {
 
     private int updateTime;
     private String DBPath;
     private JsonObject properties;
 
-    public static synchronized Property getInstance() {
-        if ( instance == null ) {
-            instance = new Property();
-        }
 
-        return instance;
-    }
-
-    protected Property() {
+    public Configuration() {
         readProperties();
     }
 
@@ -50,9 +40,9 @@ public class Property {
 
             fr.close();
         } catch ( FileNotFoundException ex ) {
-            Logger.getLogger( Property.class.getName() ).log( Level.SEVERE, null, ex );
+            Logger.getLogger(Configuration.class.getName() ).log( Level.SEVERE, null, ex );
         } catch ( IOException ex ) {
-            Logger.getLogger( Property.class.getName() ).log( Level.SEVERE, null, ex );
+            Logger.getLogger(Configuration.class.getName() ).log( Level.SEVERE, null, ex );
         } 
     }
 

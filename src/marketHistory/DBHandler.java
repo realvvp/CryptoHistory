@@ -46,7 +46,7 @@ public class DBHandler {
             try {
                 Properties properties = new Properties();
                 properties.setProperty( "PRAGMA foreign_keys", "ON" );
-                conn = DriverManager.getConnection( "jdbc:sqlite:" + Property.getInstance().getDBPath(), properties );
+                conn = DriverManager.getConnection( "jdbc:sqlite:" + History.config.getDBPath(), properties );
             } catch ( SQLException ex ) {
                 Logger.getLogger( History.class.getName() ).log( Level.SEVERE, null, ex );
             }

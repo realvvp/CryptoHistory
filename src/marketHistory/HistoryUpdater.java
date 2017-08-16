@@ -38,7 +38,7 @@ public class HistoryUpdater implements Runnable {
             doUpdate();
 
             try {
-                Thread.sleep( Property.getInstance().getUpdateTime() );
+                Thread.sleep( History.config.getUpdateTime() );
             } catch ( InterruptedException ex ) {
                 Thread.currentThread().interrupt();
             }
@@ -59,6 +59,8 @@ public class HistoryUpdater implements Runnable {
 
         for ( String curr : currencies ) {
             history = performBasicRequest( BITTREX_API_URL.concat( curr ) );
+            
+            int maxId = getMaxID(curr);
 
             if ( history != null ) {
                 if ( history.get( "success" ).getAsBoolean() ) {
@@ -68,7 +70,7 @@ public class HistoryUpdater implements Runnable {
                     for ( int i = 0; i < result.size(); i++ ) {
                         item = result.get( i ).getAsJsonObject();
 
-                        if ( checkCanInsert( item.get( "Id" ).getAsInt(), curr ) ) {
+                        if ( maxId < item.get( "Id" ).getAsInt() ) {
                             insertRow( item, curr );
                         } else{
                             break;
@@ -79,25 +81,19 @@ public class HistoryUpdater implements Runnable {
         }
     }
 
-    protected Boolean checkCanInsert( int id, String currency ) {
-        Boolean result = false;
+    protected int getMaxID( String currency ) {
+        int result = 0;
 
         ResultSet rs;
         synchronized ( DBHandler.class ) {
-            rs = DBHandler.getInstance().executeQuery( "SELECT * FROM history WHERE Id = '" + id
-                    + "' AND Currency = '" + currency + "'" );
+            rs = DBHandler.getInstance().executeQuery( "SELECT MAX(Id) AS maxId FROM history WHERE Currency = '" + currency + "'" );
         }
 
         if ( rs != null ) {
             try { 
-                int count = 0;
                 while(rs.next()){
-                    count++;
-                    if(count > 0){
-                        break;
-                    }
+                    result = rs.getInt("maxId");
                 }
-                result = count == 0;
             } catch ( SQLException ex ) {
                 Logger.getLogger( HistoryUpdater.class.getName() ).log( Level.SEVERE, null, ex );
             }
